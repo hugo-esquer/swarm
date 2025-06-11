@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: supersecret
+      MYSQL_DATABASE: app_db
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - docker-net
+
+  app:
+    image: localhost:5000/my-php-app:latest
+    deploy:
+      replicas: 2
+    networks:
+      - docker-net
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - app
+    networks:
+      - docker-net
+
+  vscode:
+    image: codercom/code-server:latest
+    environment:
+      PASSWORD: "[???]"
+    ports:
+      - "8443:8443"
+    volumes:
+      - vscode_data:/home/coder/project
+    networks:
+      - docker-net
+
+volumes:
+  db_data:
+    driver_opts:
+      type: "nfs"
+      o: "addr=192.168.56.30,nolock,soft,rw"
+      device: ":/srv/nfs/db"
+  vscode_data:
+    driver_opts:
+      type: "nfs"
+      o: "addr=192.168.56.30,nolock,soft,rw"
+      device: ":/srv/nfs/vscode"
+
+networks:
+  docker-net:
+    driver: overlay
