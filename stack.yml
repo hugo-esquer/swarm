@@ -31,6 +31,8 @@ services:
       - app
     networks:
       - docker-net
+    expose: 
+      - "80"
 
   vscode:
     image: 192.168.140.173:5000/codercom/code-server:latest
