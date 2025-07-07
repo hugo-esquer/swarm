@@ -3,7 +3,7 @@ version: "3.8"
 services:
 
   mariadb:
-    image: 192.168.140.173:5000/mariadb:latest
+    image: nfsdocker:5000/mariadb:latest
     environment:
       MYSQL_ROOT_PASSWORD: supersecret
       MYSQL_DATABASE: app_db
@@ -11,16 +11,29 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - docker-net
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
 
   app:
-    image: 192.168.140.173:5000/my-php-app:latest
-    deploy:
-      replicas: 2
+    image: nfsdocker:5000/my-php-app:latest
+    depends_on:
+      - mariadb
     networks:
       - docker-net
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
 
   nginx:
-    image: 192.168.140.173:5000/nginx:custom
+    image: nfsdocker:5000/nginx:custom
     ports:
       - "80:80"
       - "443:443"
@@ -31,9 +44,12 @@ services:
       - app
     networks:
       - docker-net
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   vscode:
-    image: 192.168.140.173:5000/codercom/code-server:latest
+    image: nfsdocker:5000/codercom/code-server:latest
     environment:
       PASSWORD: "superpassword"
     ports:
@@ -42,17 +58,22 @@ services:
       - vscode_data:/home/coder/project
     networks:
       - docker-net
+    deploy:
+      restart_policy:
+        condition: on-failure
 
 volumes:
   db_data:
+    driver: local
     driver_opts:
       type: "nfs"
-      o: "addr=192.168.56.30,nolock,soft,rw"
+      o: "addr=fnsdocker,nolock,soft,rw"
       device: ":/srv/nfs/db"
   vscode_data:
+    driver: local
     driver_opts:
       type: "nfs"
-      o: "addr=192.168.56.30,nolock,soft,rw"
+      o: "addr=fnsdocker,nolock,soft,rw"
       device: ":/srv/nfs/vscode"
 
 networks:
