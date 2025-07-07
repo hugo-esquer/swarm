@@ -17,6 +17,7 @@ services:
       - registry_auth:/auth
       - registry_certs:/certs
     deploy:
+      replicas: 1
       placement:
         constraints:
           - node.role == manager
@@ -28,19 +29,19 @@ volumes:
     driver: local
     driver_opts:
       type: "nfs"
-      o: "addr=192.168.56.30,nolock,soft,rw"
+      o: "addr=nfsdocker,nolock,soft,rw"
       device: ":/srv/docker-volumes/nfs/registry/data"
   registry_auth:
     driver: local
     driver_opts:
       type: "nfs"
-      o: "addr=192.168.56.30,nolock,soft,rw"
+      o: "addr=nfsdocker,nolock,soft,rw"
       device: ":/srv/docker-volumes/nfs/registry/auth"
   registry_certs:
     driver: local
     driver_opts:
       type: "nfs"
-      o: "addr=192.168.56.30,nolock,soft,rw"
+      o: "addr=nfsdocker,nolock,soft,rw"
       device: ":/srv/docker-volumes/nfs/registry/certs"
 
 networks:
