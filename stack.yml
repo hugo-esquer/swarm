@@ -3,7 +3,7 @@ version: "3.8"
 services:
 
   mariadb:
-    image: nfsdocker:5000/mariadb:latest
+    image: manager:5000/mariadb:latest
     environment:
       MYSQL_ROOT_PASSWORD: supersecret
       MYSQL_DATABASE: app_db
@@ -19,7 +19,7 @@ services:
         condition: on-failure
 
   app:
-    image: nfsdocker:5000/my-php-app:latest
+    image: manager:5000/my-php-app:latest
     depends_on:
       - mariadb
     networks:
@@ -33,7 +33,7 @@ services:
         delay: 10s
 
   nginx:
-    image: nfsdocker:5000/nginx:custom
+    image: manager:5000/nginx:custom
     ports:
       - "80:80"
       - "443:443"
@@ -46,7 +46,7 @@ services:
         condition: on-failure
 
   vscode:
-    image: nfsdocker:5000/codercom/code-server:latest
+    image: manager:5000/codercom/code-server:latest
     environment:
       PASSWORD: "superpassword"
     ports:
@@ -64,13 +64,13 @@ volumes:
     driver: local
     driver_opts:
       type: "nfs"
-      o: "addr=nfsdocker,nolock,soft,rw"
+      o: "addr=manager,nolock,soft,rw"
       device: ":/srv/nfs/db"
   vscode_data:
     driver: local
     driver_opts:
       type: "nfs"
-      o: "addr=nfsdocker,nolock,soft,rw"
+      o: "addr=manager,nolock,soft,rw"
       device: ":/srv/nfs/vscode"
 
 networks:
