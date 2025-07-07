@@ -64,14 +64,14 @@ volumes:
     driver: local
     driver_opts:
       type: "nfs"
-      o: "addr=registry.local,nolock,soft,rw"
-      device: ":/srv/nfs/db"
+      o: "addr=nfsdocker,nolock,soft,rw"
+      device: ":/srv/docker-volumes/nfsdb"
   vscode_data:
     driver: local
     driver_opts:
       type: "nfs"
-      o: "addr=registry.local,nolock,soft,rw"
-      device: ":/srv/nfs/vscode"
+      o: "addr=nfsdocker,nolock,soft,rw"
+      device: ":/srv/docker-volumes/nfsvscode"
 
 networks:
   docker-net:
