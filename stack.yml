@@ -46,7 +46,7 @@ services:
         condition: on-failure
 
   vscode:
-    image: registry.local:5000/codercom/code-server:latest
+    image: registry.local:5000/codeserver:latest
     environment:
       PASSWORD: "superpassword"
     ports:
